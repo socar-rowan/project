@@ -1,0 +1,14 @@
+SG Change Trigger[Message]
+############## Monitor {{ctx.monitor.name}} ################################
+Trigger: {{ctx.trigger.name}}
+Detected Time : {{ctx.periodStart}} - {{ctx.periodEnd}}
+- eventTime : {{eventTime}}
+- eventSource : {{eventSource}}
+- eventName : {{eventName}}
+- UserInfo : {{userIdentity.sessionContext.sessionIssuer.userName}}
+- ActionName : {{requestParameters.groupId}}
+- IP :  {{requestParameters.ipPermissions.items.0.ipRanges.items.0.cidrIp}}
+- TCP/UDP :  {{requestParameters.ipPermissions.items.0.ipProtocol}}
+- FromPort :  {{requestParameters.ipPermissions.items.0.fromPort}}
+- ToPort :  {{requestParameters.ipPermissions.items.0.toPort}}
+{{/_source}}{{/hits}}{{/hits}}{{/ctx.results}}

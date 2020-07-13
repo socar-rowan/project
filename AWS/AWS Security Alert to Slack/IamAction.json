@@ -1,0 +1,157 @@
+{    "size": 500,   
+    "query": {        
+           "bool": {            
+               "must": [                
+                               {   
+                "query_string": {
+                       "query": "AttachRolePolicy OR DeleteRole OR DetachRolePolicy OR UpdateAssumeRolePolicy OR DetachPolicy OR DeletePolicy",
+                       "default_field": "*",
+                       "fields": [],
+                       "type": "best_fields",
+                       "default_operator": "or",
+                       "max_determinized_states": 10000,
+                       "enable_position_increments": true,
+                       "fuzziness": "AUTO",
+                       "fuzzy_prefix_length": 0,
+                       "fuzzy_max_expansions": 50,
+                       "phrase_slop": 0,
+                       "analyze_wildcard": true,
+                       "escape": false,
+                       "auto_generate_synonyms_phrase_query": true,
+                       "fuzzy_transpositions": true,
+                       "boost": 1
+                   }
+               },
+               {
+                   "match_all": {
+                       "boost": 1
+                   }
+               },
+               {
+                   "bool": {
+                       "should": [
+                           {
+                               "match_phrase": {
+                                   "eventName": {
+                                       "query": "DeleteRole",
+                                       "slop": 0,
+                                       "zero_terms_query": "NONE",
+                                       "boost": 1
+                                   }
+                               }
+                           },
+                           {
+                               "match_phrase": {
+                                   "eventName": {
+                                       "query": "DetachRolePolicy",
+                                       "slop": 0,
+                                       "zero_terms_query": "NONE",
+                                       "boost": 1
+                                   }
+                               }
+                           },
+                           {
+                               "match_phrase": {
+                                   "eventName": {
+                                       "query": "UpdateAssumeRolePolicy",
+                                       "slop": 0,
+                                       "zero_terms_query": "NONE",
+                                       "boost": 1
+                                   }
+                               }
+                           },
+                           {
+                               "match_phrase": {
+                                   "eventName": {
+                                       "query": "DetachPolicy",
+                                       "slop": 0,
+                                       "zero_terms_query": "NONE",
+                                       "boost": 1
+                                   }
+                               }
+                           },
+                           {
+                               "match_phrase": {
+                                   "eventName": {
+                                       "query": "DeletePolicy",
+                                       "slop": 0,
+                                       "zero_terms_query": "NONE",
+                                       "boost": 1
+                                   }
+                               }
+                           },
+                           {
+                               "match_phrase": {
+                                   "eventName": {
+                                       "query": "AttachRolePolicy",
+                                       "slop": 0,
+                                       "zero_terms_query": "NONE",
+                                       "boost": 1
+                                   }
+                               }
+                           }
+                       ],
+                       "adjust_pure_negative": true,
+                       "minimum_should_match": "1",
+                       "boost": 1
+                   }
+               },
+               {
+                   "range": {
+                       "@timestamp": {
+                           "from": "now-20m",
+                           "to": "now-8m",
+                           "include_lower": true,
+                           "include_upper": true,
+                           "format": "epoch_millis",
+                           "boost": 1
+                       }
+                   }
+               }
+           ],
+           "adjust_pure_negative": true,
+           "boost": 1
+       }
+   },
+   "version": true,
+   "_source": {
+       "includes": [],
+       "excludes": []
+   },
+   "stored_fields": "*",
+   "docvalue_fields": [
+       {
+           "field": "@timestamp",
+           "format": "date_time"
+       },
+       {
+           "field": "eventTime",
+           "format": "date_time"
+       },
+       {
+           "field": "userIdentity.sessionContext.attributes.creationDate",
+           "format": "date_time"
+       }
+   ],
+   "script_fields": {},
+   "sort": [
+       {
+           "@timestamp": {
+               "order": "desc",
+               "unmapped_type": "boolean"
+           }
+       }
+   ],
+   "highlight": {
+       "pre_tags": [
+           "@kibana-highlighted-field@"
+       ],
+       "post_tags": [
+           "@/kibana-highlighted-field@"
+       ],
+       "fragment_size": 2147483647,
+       "fields": {
+           "*": {}
+       }
+   }
+}

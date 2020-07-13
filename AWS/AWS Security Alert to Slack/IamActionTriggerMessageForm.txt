@@ -1,0 +1,13 @@
+*** IAM Change Trigger ***[Message] 
+############## Monitor {{ctx.monitor.name}} ######################################################
+Trigger: {{ctx.trigger.name}}
+Detected Time : {{ctx.periodStart}} - {{ctx.periodEnd}}
+####################################################################################
+{{#ctx.results}}{{#hits}}{{#hits}}{{#_source}}
+-------------------------------------------------------------------------------------- 
+- eventTime : {{eventTime}}
+- eventSource : {{eventSource}}
+- eventName : {{eventName}}
+- ActionName : {{requestParameters.roleName}}{{requestParameters.policyArn}}
+- UserInfo : {{userIdentity.sessionContext.sessionIssuer.userName}}
+{{/_source}}{{/hits}}{{/hits}}{{/ctx.results}}
