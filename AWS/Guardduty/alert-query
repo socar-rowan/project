@@ -1,0 +1,96 @@
+{
+    "size": 500,
+    "query": {
+        "bool": {
+            "must": [
+                {
+                    "match_all": {
+                        "boost": 1
+                    }
+                }
+            ],
+            "filter": [
+                {
+                    "match_all": {
+                        "boost": 1
+                    }
+                },
+                {
+                    "range": {
+                        "service.eventLastSeen": {
+                            "from": "now-10m",
+                            "to": "now",
+                            "include_lower": true,
+                            "include_upper": true,
+                            "format": "epoch_millis",
+                            "boost": 1
+                        }
+                    }
+                }
+            ],
+            "must_not": [
+                {
+                    "match_phrase": {
+                        "severity": {
+                            "query": "2",
+                            "slop": 0,
+                            "zero_terms_query": "NONE",
+                            "boost": 1
+                        }
+                    }
+                }
+            ],
+            "adjust_pure_negative": true,
+            "boost": 1
+        }
+    },
+    "version": true,
+    "_source": {
+        "includes": [],
+        "excludes": []
+    },
+    "stored_fields": "*",
+    "docvalue_fields": [
+        {
+            "field": "createdAt",
+            "format": "date_time"
+        },
+        {
+            "field": "resource.instanceDetails.launchTime",
+            "format": "date_time"
+        },
+        {
+            "field": "service.eventFirstSeen",
+            "format": "date_time"
+        },
+        {
+            "field": "service.eventLastSeen",
+            "format": "date_time"
+        },
+        {
+            "field": "updatedAt",
+            "format": "date_time"
+        }
+    ],
+    "script_fields": {},
+    "sort": [
+        {
+            "service.eventLastSeen": {
+                "order": "desc",
+                "unmapped_type": "boolean"
+            }
+        }
+    ],
+    "highlight": {
+        "pre_tags": [
+            "@kibana-highlighted-field@"
+        ],
+        "post_tags": [
+            "@/kibana-highlighted-field@"
+        ],
+        "fragment_size": 2147483647,
+        "fields": {
+            "*": {}
+        }
+    }
+}

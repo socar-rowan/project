@@ -1,0 +1,39 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowClodWatchLogs",
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+            ],
+            "Resource": "arn:aws:logs:*:*:*"
+        },
+        {
+            "Sid": "AllowESPut",
+            "Effect": "Allow",
+            "Action": [
+                "es:ESHttpHead",
+                "es:ESHttpPost",
+                "es:ESHttpGet",
+                "es:ESHttpDelete",
+                "es:ESHttpPut"
+            ],
+            "Resource": "arn:aws:es:ap-northeast-2:464643081068:domain/cloudtrail-analysis-log"
+        },
+        {
+            "Sid": "AllowS3Access",
+            "Effect": "Allow",
+            "Action": [
+                "s3:Get*",
+                "s3:List*"
+            ],
+            "Resource": [
+                "arn:aws:s3:::socar-dev-guardduty-log",
+                "arn:aws:s3:::socar-dev-guardduty-log/*"
+            ]
+        }
+    ]
+}
