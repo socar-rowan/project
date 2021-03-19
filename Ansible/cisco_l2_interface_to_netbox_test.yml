@@ -1,0 +1,50 @@
+- name: Create interface
+      netbox.netbox.netbox_device_interface:
+        netbox_url: # https를 포함한 netbox url 경로
+        netbox_token: # 차트 value 에서 정의한 token (google API 키를 등록하여 사용)
+        data:
+          device: "{{information.ansible_facts.net_hostname}}"
+          name: "{{item.name}}"
+          type: 1000Base-T (1GE) 
+          mtu: 1500 
+          mode: Access
+          untagged_vlan: "{{item.access}}" or "{{item.access.vlan}}"
+        state: present
+      with_items: "{{resource}}"
+
+# untagged_vlan 결과값 error : "dict object" 에 access 라는건 없다 라고 오류를 냄
+# json 으로 구성된 변수에서 그 값을 선택해야하는 방법을 강구하게 됨 
+
+- name: Create interface
+      netbox.netbox.netbox_device_interface:
+        netbox_url: # https를 포함한 netbox url 경로
+        netbox_token: # 차트 value 에서 정의한 token (google API 키를 등록하여 사용)
+        data:
+          device: "{{information.ansible_facts.net_hostname}}"
+          name: "{{item.name}}"
+          type: 1000Base-T (1GE) 
+          mtu: 1500
+          mode: Access
+          untagged_vlan: "{{item|json_query('*.vlan')}}"
+        state: present
+      with_items: "{{resource}}"
+
+# untagged_vlan 결과값이 [4] 로 나와서 netbox 에서는 int 가 아니라며 error 발생시킴 
+
+- name: Create interface
+      netbox.netbox.netbox_device_interface:
+        netbox_url: # https를 포함한 netbox url 경로
+        netbox_token: # 차트 value 에서 정의한 token (google API 키를 등록하여 사용)
+        data:
+          device: "{{information.ansible_facts.net_hostname}}"
+          name: "{{item.name}}"
+          type: 1000Base-T (1GE)
+          mtu: 1500
+          mode: Access
+          untagged_vlan: "{{item|json_query('value.vlan')}}"
+        state: present
+      with_dict: "{{resource}}"
+
+# 그럼 dict 로 만들어서 돌리자 라고 생각하여 "with_dict" 로 loop 문 생성
+# untagged_vlan 은 정상이지만, "{{item.name}}" 를 못불러옴 "dict object" 에 
+# name 라는건 없다 라고 오류를 냄 
