@@ -14,7 +14,7 @@
         data:
           name: "{{item.instance_id}}"
           cluster: aws-account # 미리 지정된 값
-          virtual_machine_role: # 미리 지정된 값
+          virtual_machine_role: test # 미리 지정된 값
           comments: |
             service: "{{item.tags.Name}}"                         
             type: "{{item.instance_type}}"                    
