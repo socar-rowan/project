@@ -1,0 +1,42 @@
+- hosts: Switchs
+  gather_facts: no
+  vars:
+    ansible_become: yes
+    ansible_become_method: enable
+    ansible_network_os: ios
+    ansible_user: username
+    ansible_ssh_pass: password
+  
+  tasks:
+    - name: Gather facts (ops)
+      ios_facts:
+        gather_subset: all
+        gather_network_resources: all
+      when: ansible_network_os == 'ios'
+
+- hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: set fact another groups information
+      set_fact: 
+        information: "{{ hostvars[groups['Switchs'][0]]}}"  
+    
+    
+    - name: set fact ansible_network_resource
+      set_fact: 
+        resource: "{{information.ansible_facts.network_resources.l2_interfaces}}"  
+          
+    - name: Create interface
+      netbox.netbox.netbox_device_interface:
+        netbox_url: # https를 포함한 netbox url 경로
+        netbox_token: # 차트 value 에서 정의한 token (google API 키를 등록하여 사용)
+        data:
+          device: "{{information.ansible_facts.net_hostname}}"
+          name: "{{item.name}}"
+          type: 1000Base-T (1GE) # Netbox 에서 정의된 값만 입력가능합니다.
+          mtu: 1500
+          mode: Access
+          untagged_vlan: "{{item|json_query('access.vlan')}}"
+        state: present
+      with_items: "{{resource}}"
