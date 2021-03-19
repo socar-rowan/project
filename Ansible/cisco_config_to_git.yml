@@ -1,0 +1,51 @@
+
+- hosts: Switchs
+  gather_facts: no
+  vars:
+    ansible_become: yes
+    ansible_become_method: enable
+    ansible_network_os: ios
+    ansible_user: username
+    ansible_ssh_pass: password
+  
+  tasks:
+    - name: Gather facts (ops)
+      ios_facts:
+        gather_subset: all
+        gather_network_resources: all
+      when: ansible_network_os == 'ios'
+
+- hosts: localhost
+  vars:
+    token: user_git_private_token
+
+  tasks:
+
+    - name: git clone
+      command: git clone https://{{token}}@github.com/사용하시는git-url /tmp/directory # 서버의 저장공간
+    
+    - name: file "create"
+      copy:
+        dest: /tmp/directory/{{hostvars[item]['ansible_facts']['net_hostname']}}-{{ansible_date_time.date}}.txt
+        content: "{{hostvars[item]['ansible_facts']['net_config']}}"
+      with_items: "{{groups.Switchs}}"
+
+    - name: git global user
+      command: git config --global user.name "git_user"
+
+    - name: git global email
+      command: git config --global user.email git_user_email
+
+    - name: git add
+      command: chdir=/tmp/directory/ git add .
+    
+    - name: git commit
+      command: chdir=/tmp/directory/ git commit -m "commit 코멘트"
+
+    - name: git push
+      command: chdir=/tmp/directory/ git push
+      register: push_result
+
+    - name: direcotry remove
+      command: rm -rf /tmp/directory # Pod 로 올라와있고, AWX에서 한달에 한번 실행되는 컨피그 백업으로 폴더는 생성 후 삭제합니다.
+      when: push_result.rc == 0
