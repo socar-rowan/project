@@ -1,0 +1,38 @@
+- hosts: Routers
+  gather_facts: no
+  vars:
+    ansible_become: yes
+    ansible_become_method: enable
+    ansible_network_os: ios
+    ansible_user: username
+    ansible_ssh_pass: password
+
+  tasks:
+    - name: Gather facts (ops)
+      ios_facts:
+        gather_subset: all
+        gather_network_resources: all
+      when: ansible_network_os == 'ios'
+
+- hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: set fact another groups information
+      set_fact: 
+        information: "{{ hostvars[groups['Routers'][0]] }}"  
+
+    - name: set fact ansible_network_resource
+      set_fact: 
+        resource: "{{information.ansible_facts.net_interfaces}}" 
+        
+    - name: Create device within Netbox with only required information
+      netbox_ip_address:
+        netbox_url: https를 포함한 netbox url 경로
+        netbox_token: 차트 value 에서 정의한 token (google API 키를 등록하여 사용)
+        data:
+          address: "{{item.value.ipv4.0.address}}/{{item.value.ipv4.0.subnet}}" # Netbox 에서는 IP는 XXX.XXX.XXX.XXX & /bit 로만 표현이 가능합니다
+          description: "{{item.key}}"
+      with_dict: "{{resource}}"
+      ignore_errors: true
+      when: item.value.ipv4.0.address != ""
