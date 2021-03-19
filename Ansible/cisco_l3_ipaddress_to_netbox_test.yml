@@ -1,0 +1,35 @@
+- name: Create device within Netbox with only required information
+      netbox_ip_address:
+        netbox_url: https를 포함한 netbox url 경로
+        netbox_token: 차트 value 에서 정의한 token (google API 키를 등록하여 사용)
+        data:
+          address: "{{item.ipv4}}"
+      with_item: "{{resource}}"
+      ignore_errors: true
+      when: item.value.ipv4.0.address != ""
+
+# dict object ["IPv4"] 를 모른다고 error 발생 
+
+- name: Create device within Netbox with only required information
+      netbox_ip_address:
+        netbox_url: https를 포함한 netbox url 경로
+        netbox_token: 차트 value 에서 정의한 token (google API 키를 등록하여 사용)
+        data:
+          address: "{{item[0]['ipv4']}}"
+      with_item: "{{resource}}"
+      ignore_errors: true
+      when: item.value.ipv4.0.address != ""
+
+# element 0 not define '0' 을 모른다고 error 발생 
+
+- name: Create device within Netbox with only required information
+      netbox_ip_address:
+        netbox_url: https를 포함한 netbox url 경로
+        netbox_token: 차트 value 에서 정의한 token (google API 키를 등록하여 사용)
+        data:
+          address: "{{item.value|json_query('*.ipv4')}}"
+      with_dict: "{{resource}}"
+      ignore_errors: true
+      when: item.value.ipv4.0.address != ""
+
+# 결과값에 [ ] 이 포함되어서 나옴 
