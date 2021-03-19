@@ -1,0 +1,25 @@
+- hosts: localhost
+  tasks:
+    - name: set fact another groups information
+      ec2_instance_facts:
+        aws_access_key: # AWS access_key
+        aws_secret_key: # AWS secret_key
+        region: # AWS region
+      register: ec2_result
+
+    - name: Create virtual machine within Netbox with only required information
+      netbox.netbox.netbox_virtual_machine:
+        nnetbox_url: https를 포함한 netbox url 경로
+        netbox_token: 차트 value 에서 정의한 token (google API 키를 등록하여 사용)
+        data:
+          name: "{{item.instance_id}}"
+          cluster: aws-account # 미리 지정된 값
+          virtual_machine_role: # 미리 지정된 값
+          comments: |
+            service: "{{item.tags.Name}}"                         
+            type: "{{item.instance_type}}"                    
+            private_ip_address: "{{item.private_ip_address}}"                 
+            private_dns_name: "{{item.private_dns_name}}"     
+        state: present
+      with_items: "{{ec2_result|json_query('instances')}}"
+      ignore_errors: True
