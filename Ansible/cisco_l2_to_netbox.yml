@@ -1,0 +1,35 @@
+- hosts: Switchs # Inventory Group = Switchs
+  gather_facts: no
+  vars:
+    ansible_become: yes
+    ansible_become_method: enable
+    ansible_network_os: ios
+    ansible_user: username
+    ansible_ssh_pass: password
+  
+  tasks:
+    - name: Gather facts (ops)
+      ios_facts: #ios_facts 모듈을 사용하여 Device 의 정보를 가지고 올 수 있다
+        gather_subset: all # min,all 로 선택가능
+        gather_network_resources: all # l2_interface , l3_interface 로 선택가능
+      when: ansible_network_os == 'ios'
+
+- hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: set fact another groups information
+      set_fact: 
+        information: "{{ hostvars[groups['Switchs'][0]] }}" # Switch Group 전역변수 사용 
+    
+    - name: Create device within Netbox with only required information
+      netbox_device:
+        netbox_url: https를 포함한 netbox url 경로
+        netbox_token: 차트 value 에서 정의한 token (google API 키를 등록하여 사용)
+        data:
+          name: "{{information.ansible_facts.net_hostname}}" 
+          device_type: "{{ information.ansible_facts.net_model }}" 
+          device_role: L2 # 미리 정의된 값
+          serial: "{{information.ansible_facts.net_serialnum }}"
+          site: TEST # 미리 정의된 값
+        state: present
