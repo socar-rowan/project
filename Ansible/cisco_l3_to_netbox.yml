@@ -1,0 +1,35 @@
+- hosts: Routers # Group = Router
+  gather_facts: no
+  vars:
+    ansible_become: yes
+    ansible_become_method: enable
+    ansible_network_os: ios
+    ansible_user: username
+    ansible_ssh_pass: password
+  
+  tasks:
+    - name: Gather facts (ops)
+      ios_facts:
+        gather_subset: all
+        gather_network_resources: all
+      when: ansible_network_os == 'ios'
+
+- hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: set fact another groups information
+      set_fact: 
+        information: "{{ hostvars[groups['Routers'][0]] }}"  # Router Group 전역변수 사용 
+        
+    - name: Create device within Netbox with only required information
+      netbox_device:
+        netbox_url: https를 포함한 netbox url 경로
+        netbox_token: 차트 value 에서 정의한 token (google API 키를 등록하여 사용)
+        data:
+          name: "{{information.ansible_facts.net_hostname}}" 
+          device_type: "{{ information.ansible_facts.net_model}}" 
+          device_role: L3 # 미리 정의된 값
+          serial: "{{information.ansible_facts.net_serialnum}}"
+          site: TEST # 미리 정의된 값
+        state: present
