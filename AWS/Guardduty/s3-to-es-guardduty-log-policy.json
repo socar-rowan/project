@@ -21,7 +21,7 @@
                 "es:ESHttpDelete",
                 "es:ESHttpPut"
             ],
-            "Resource": "arn:aws:es:ap-northeast-2:464643081068:domain/cloudtrail-analysis-log"
+            "Resource": "arn:aws:es:::/"
         },
         {
             "Sid": "AllowS3Access",
@@ -31,8 +31,8 @@
                 "s3:List*"
             ],
             "Resource": [
-                "arn:aws:s3:::socar-dev-guardduty-log",
-                "arn:aws:s3:::socar-dev-guardduty-log/*"
+                "arn:aws:s3:::bucket",
+                "arn:aws:s3:::bucket/*"
             ]
         }
     ]
